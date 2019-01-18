@@ -1,0 +1,118 @@
+<aura:component controller="ActionItemsFullViewController" implements="force:hasRecordId,flexipage:availableForRecordHome,force:appHostable,flexipage:availableForAllPageTypes,force:LightningQuickAction" 
+                access="GLOBAL">
+    <aura:attribute name="QBRid" type="String"/>
+    <aura:attribute name="items" type="Task[]" />
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="Url" type="String" />
+    <aura:attribute name="itemsSize" type="Integer" />
+    <aura:attribute name="ForeheadUrl" type="String" default="https://tmcinpact2--dev12.lightning.force.com/lightning/r/"/>
+    <aura:attribute name="ForAddUrl1" type="String" default="User/"/>
+    <aura:attribute name="ForAddUrl2" type="String" default="Tasks/"/>
+    <aura:attribute name="ForefootUrl" type="String" default="/view"/>
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <!-- handlers-->
+    <aura:handler name="init" value="{!this }" action="{!c.init }"/>
+
+     <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__figure">
+                        <span class="slds-icon_container slds-icon-standard-account" title="account">
+                          	<img  style="width:2rem;height:2rem;background-color: #4BC076;" src="/img/icon/t4v35/standard/task.svg"  alt="Action Items" title="QBR/QTR"/>
+                            <span class="slds-assistive-text">Action Items</span>
+                        </span>
+                    </div>
+                    <div class="slds-media__body">
+                       <h2 id="header_1629:0" data-aura-rendered-by="1640:0">
+                        <span class="slds-card__header-title slds-truncate slds-m-right--xx-small" title="Action Items" data-aura-rendered-by="1642:0">QBR/QTR Action Items</span>
+                        <span class="slds-card__header-title slds-shrink-none slds-m-right--xx-small" title="Action Items" data-aura-rendered-by="1645:0"> 
+                            <aura:if isTrue="{!v.itemsSize == 0}">
+                                (0)
+                            </aura:if>
+                            <aura:if isTrue="{!and((v.itemsSize > 0),!(v.itemsSize > 5))}">
+                                ({!v.itemsSize})
+                            </aura:if>
+                            <aura:if isTrue="{!v.itemsSize > 5}">
+                                (5+)
+                            </aura:if>
+                        </span>
+                </h2>
+                    </div>
+                </header>
+            </div>
+    
+    <aura:if isTrue="{!v.itemsSize != 0}">
+        
+        <div class="listContent" style="color:black;background-color:rgb(255, 255, 255);">
+            <ul class="forceRelatedList" aria-describedby="" data-aura-rendered-by="59:2676;a">
+                <aura:iteration items="{!v.items}" var="item">
+                    <li class="forceListRecord runtime_sales_activitiesTaskCommon runtime_sales_activitiesActivityRelatedListRow forceRecordLayout" data-aura-rendered-by="4580:0" data-aura-class="runtime_sales_activitiesTaskCommon runtime_sales_activitiesActivityRelatedListRow forceRecordLayout">
+                        <div data-recordid="{!item.Id}" class="slds-p-around--none slds-is-relative slds-text-align--left runtime_sales_activitiesTaskContent" data-aura-rendered-by="4584:0" data-aura-class="runtime_sales_activitiesTaskContent" onclick="{!c.invoke}">
+                                <div class="right slds-float--right slds-p-vertical--small slds-m-right--small " data-aura-rendered-by="4626:0">
+                                    <span data-aura-rendered-by="5530:0" class="uiOutputDate runtime_sales_activitiesTaskDueDate overdue" data-aura-class="uiOutputDate runtime_sales_activitiesTaskDueDate">
+                                        <lightning:formattedDateTime name="{!index}" class="slds-text-color_error slds-text-align_right" value="{!item.ActivityDate}"  day="2-digit" month="short"/>
+                                    </span>
+                                </div>
+                                <div class="middle slds-p-top--small slds-m-bottom-none slds-p-bottom--none slds-p-left--xxx-small" data-aura-rendered-by="4629:0">
+                                    <div class="fields slds-text-align--left slds-p-left--xx-small slds-p-right--medium runtime_sales_activitiesTaskContentFields" data-aura-rendered-by="4632:0" data-aura-class="runtime_sales_activitiesTaskContentFields">
+                                        <span class="subject slds-text-body--regular slds-text-color_default " data-aura-rendered-by="4633:0">
+                                            <div class="slds-grid slds-p-right--x-small" data-aura-rendered-by="4634:0">
+                                                <span class="primaryField slds-col slds-grow-none slds-truncate" data-aura-rendered-by="4636:0">
+                                                        <span data-aura-rendered-by="4522:0" class="uiOutputText forceOutputLookup" data-aura-class="uiOutputText forceOutputLookup">
+                                                            <aura:if isTrue="{!or(item.Status == 'Completed',item.Status == 'Suspended')}">
+                                                                <div class="slds-truncate" title="Subject" style="text-decoration: line-through;">
+                                                                        {!item.Subject}
+                                                                   
+                                                                </div>
+                                                                <aura:set attribute="else">
+                                                                    <div class="slds-truncate" title="Subject" >
+                                                                            {!item.Subject}
+                                                                    </div>
+                                                                </aura:set>
+                                                            </aura:if>      
+                                                        </span>
+                                                </span>
+                                            </div>
+                                        </span>
+                                        <ul class="slds-text-body--small slds-m-around-none slds-p-around-none" >
+                                            <li data-aura-rendered-by="4656:0">
+                                                <div class="slds-list--horizontal forceListRecordItem"  data-aura-class="forceListRecordItem">
+                                                    <div class="slds-item--label slds-truncate recordCell" title="Status:" data-aura-rendered-by="4538:0">Status:</div>
+                                                    <div class="slds-item--detail slds-truncate recordCell">
+                                                        <span data-aura-rendered-by="4534:0">
+                                                            　{!item.Status}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="slds-list--horizontal forceListRecordItem" data-aura-rendered-by="4548:0" data-aura-class="forceListRecordItem">
+                                                    <div class="slds-item--label slds-truncate recordCell" title="Priority:" data-aura-rendered-by="4549:0">Priority:</div>
+                                                    <div class="slds-item--detail slds-truncate recordCell" data-aura-rendered-by="4551:0">
+                                                        <span>
+                                                            {!item.Priority}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="slds-list--horizontal forceListRecordItem"  data-aura-class="forceListRecordItem">
+                                                    <div class="slds-item--label slds-truncate recordCell" title="Assigned To:" data-aura-rendered-by="4573:0">Assigned To:</div>
+                                                    <div class="slds-item--detail slds-truncate recordCell" data-aura-rendered-by="4575:0">
+                                                        <span data-aura-rendered-by="4562:0" class="uiOutputText forceOutputLookup" data-aura-class="uiOutputText forceOutputLookup">
+                                                                {!item.OwnerName__c}
+                                                        </span></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                    </li>
+                    <div class="slds-border_top"/>
+                </aura:iteration>
+            </ul>
+        </div>
+    </aura:if>
+    
+    
+</aura:component>

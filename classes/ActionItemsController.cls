@@ -10,7 +10,7 @@ public with sharing class ActionItemsController {
                    		and Task_Type__c='Action Item'
                     	order by ActivityDate desc nulls last,Priority desc
                   	];
-        
+        ///one/one.app#/alohaRedirect/apex/を使って、ページ遷移する時、salesforceの標準ヘッダーが持ってます
         re.url=URL.getSalesforceBaseUrl().toExternalForm()+'/one/one.app#/alohaRedirect/apex/TaskListView?id='+projectId;
         re.taskSize=temptask.size();
         		

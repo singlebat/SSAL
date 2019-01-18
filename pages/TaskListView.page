@@ -1,0 +1,17 @@
+<apex:page tabStyle="QBR_QTR__c" showHeader="true" controller="TaskListViewController">
+    <apex:slds />
+    <apex:includeLightning />
+        <div id="lightning" />
+        <script>
+        $Lightning.use("c:ActionItemsListEmbed", 
+                       function() {
+                           $Lightning.createComponent("c:ActionItemsListView",
+                                                      { QBRid : "{!Pid}"},
+                                                      "lightning",
+                                                      function(cmp) {
+                                                      		
+                                                      }
+                                                     );
+                	});
+        </script>      
+</apex:page>

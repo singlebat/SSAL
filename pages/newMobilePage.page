@@ -1,0 +1,77 @@
+<apex:page tabStyle="QBR_QTR__c" showHeader="true"  standardController="QBR_QTR__c" extensions="TaskListViewController" standardStylesheets="false">
+    <apex:slds />
+    <head>
+       <style>
+        	.slds-scope a {
+        		color:#333435;
+    		}
+           .forceRelatedList ul{
+           background-color:rgb(255, 255, 255);
+           }
+       </style>
+    </head>
+        <apex:includeLightning />
+        <div id="lightning"/>
+            <div id="MyHeader" style="display:block; margin: 0px; padding: 0px;">
+            <div class="slds-card__header slds-grid" style="margin: 0px; padding: 0px;">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body" style="margin: 0px; padding: 0px;">
+                        <h2 id="header_1629:0" data-aura-rendered-by="1640:0">
+                            <span class="slds-card__header-title slds-truncate slds-m-right--xx-small" title="Action Items" data-aura-rendered-by="1642:0">
+                                <img  style="width:2rem;height:2rem;background-color: #4BC076;" src="/img/icon/t4v35/standard/task.svg"  alt="Action Items" title="QBR/QTR"/>
+                                QBR/QTR Action Items
+                            </span>
+                             <span class="slds-card__header-title slds-shrink-none slds-m-right--xx-small" title="Action Items" data-aura-rendered-by="1645:0"> 
+                                 	<apex:outputPanel rendered="{!if(taskSize==0 , true ,false)}">   
+                                        (0)
+                                 	</apex:outputPanel>
+                                 	<apex:outputPanel rendered="{!if(and((taskSize > 0),!(taskSize > 5)) , true ,false)}">  
+                                        ({!taskSize})
+                                    </apex:outputPanel>
+                                 	<apex:outputPanel rendered="{!if(taskSize> 5 , true ,false)}">
+                                        (5+)
+                                 	</apex:outputPanel>
+                              </span>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            </div>
+            <div id="Mydiv" style="display:none">
+                <script>
+                function checkSize() {
+                    var myHeight = 0;
+                    if( typeof(window.innerHeight) == 'number'  ) {
+                        myHeight = window.innerHeight;   
+                    }
+                    if( myHeight > 100 ) {
+                        //list view
+                        var mydiv=document.getElementById("Mydiv");
+                        mydiv.style.display="block"; 
+                        var myHeader=document.getElementById("MyHeader");
+                        myHeader.style.display="none";   
+                    }else{
+                        var mydiv=document.getElementById("Mydiv");
+                        mydiv.style.display="none"; 
+                        var myHeader=document.getElementById("MyHeader");
+                        myHeader.style.display="block";  
+                    }
+                }
+                checkSize();
+                </script> 
+                <script>
+                var mydiv=document.getElementById("Mydiv");
+                if(mydiv.style.display=="block") {
+                    $Lightning.use("c:ActionItemsListEmbed", 
+                                   function() {
+                                       $Lightning.createComponent("c:ActionItemsListForMobile",
+                                                                  { QBRid : "{!Pid}"},
+                                                                  "lightning",
+                                                                  function(cmp) {
+                                                                  }
+                                                                 );
+                                   });
+                }
+                </script>
+            </div>
+</apex:page>

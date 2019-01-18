@@ -9,6 +9,7 @@ public class ActionItemsFullViewController {
                  and Task_Type__c='Action Item'
                  order by ActivityDate desc nulls last,Priority desc
                 ];
+        //覆盖抽取到的Sobject
         for(Task ta:re.task){
             system.debug(ta.Description);
             if(ta.Description!=null &&ta.Description.length()!=0){

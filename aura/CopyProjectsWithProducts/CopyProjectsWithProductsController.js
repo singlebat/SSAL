@@ -5,7 +5,7 @@
             var dismissActionPanel = $A.get("e.force:closeQuickAction");
             dismissActionPanel.fire();
         }
-        setTimeout(closeAction, 0);
+        setTimeout(closeAction, 500);
         
         //Project詳細画面からprojectIdを取得する
         var projectId = component.get("v.recordId");

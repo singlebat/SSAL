@@ -9,6 +9,7 @@
                 var result = response.getReturnValue();
                 component.set('v.items',result.task);
                 component.set('v.Url', result.url);
+                component.set('v.baseUrl', result.baseUrl);
                 component.set('v.itemsSize', result.taskSize);
                 
                 console.log('--result:' + response.getReturnValue());

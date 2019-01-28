@@ -3,10 +3,7 @@
     <aura:attribute name="items" type="Task[]" />
     <aura:attribute name="Url" type="String" />
     <aura:attribute name="itemsSize" type="Integer" />
-    <aura:attribute name="ForeheadUrl" type="String" default="https://tmcinpact2--dev12.lightning.force.com/lightning/r/"/>
-    <aura:attribute name="ForAddUrl1" type="String" default="User/"/>
-    <aura:attribute name="ForAddUrl2" type="String" default="Tasks/"/>
-    <aura:attribute name="ForefootUrl" type="String" default="/view"/>
+    <aura:attribute name="baseUrl" type="String"/>
     
     
     <!-- handlers-->
@@ -50,25 +47,25 @@
             </div>
             
             <aura:if isTrue="{!v.itemsSize != 0}">
-                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal">
+                <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal" style="table-layout:fixed;">
                     <thead>
                         <tr class="slds-line-height_reset">
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="30%">
                                 <div class="slds-truncate" title="SUBJECT">SUBJECT</div>
                             </th>
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="20%">
                                 <div class="slds-truncate" title="DUE DATE">DUE DATE</div>
                             </th>
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="15%">
                                 <div class="slds-truncate" title="Status">STATUS</div>
                             </th>
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="10%">
                                 <div class="slds-truncate" title="PRIORITY">PRIORITY</div>
                             </th>
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="20%">
                                 <div class="slds-truncate" title="Stage">ASSIGNED TO</div>
                             </th>
-                            <th class="slds-text-title_caps" scope="col">
+                            <th class="slds-text-title_caps" scope="col" width="5%">
                                 <div class="slds-truncate" title="Stage"></div>
                             </th>
                         </tr>
@@ -78,15 +75,15 @@
                             <tr class="slds-hint-parent">
                                 <th data-label="Subject" scope="row">
                                     <aura:if isTrue="{!or(item.Status == 'Completed',item.Status == 'Suspended')}">
-                                        <div class="slds-truncate" title="Subject" style="text-decoration: line-through;">
-                                            <a href="{!v.ForeheadUrl+v.ForAddUrl2+item.Id+v.ForefootUrl}" style="border-bottom: 1px dotted;">
+                                        <div class="slds-truncate" title="{!item.Subject}" style="text-decoration: line-through;">
+                                            <a href="{!v.baseUrl+item.Id}" style="border-bottom: 1px dotted;">
                                                 {!item.Subject}
                                             </a>
                                         </div>
                                         
                                         <aura:set attribute="else">
-                                            <div class="slds-truncate" title="Subject" >
-                                              	<a href="{!v.ForeheadUrl+v.ForAddUrl2+item.Id+v.ForefootUrl}" style="border-bottom: 1px dotted;">
+                                            <div class="slds-truncate" title="{!item.Subject}" >
+                                              	<a href="{!v.baseUrl+item.Id}" style="border-bottom: 1px dotted;">
                                                 {!item.Subject}
                                             	</a>
                                             </div>
@@ -95,20 +92,20 @@
                                     </aura:if>   
                                 </th>
                                 <td data-label="Due Date">
-                                    <div class="slds-truncate" title="Date" >
+                                    <div class="slds-truncate" title="{!item.ActivityDate}" >
                                         <ui:outputDate  aura:id="DateField" value="{!item.ActivityDate}"  format="MM/dd/yyyy" />
                                     </div>    
                                 </td>
                                 <td data-label="Status">
-                                    <div class="slds-truncate" title="Status">{!item.Status}</div>
+                                    <div class="slds-truncate" title="{!item.Status}">{!item.Status}</div>
                                     
                                 </td>
                                 <td data-label="PRIORITY">
-                                    <div class="slds-truncate" title="PRIORITY">{!item.Priority}</div>
+                                    <div class="slds-truncate" title="{!item.Priority}">{!item.Priority}</div>
                                 </td>
                                 <td data-label="Assigned To">
-                                    <div class="slds-truncate" title="Assigned">
-                                        <a href="{!v.ForeheadUrl+v.ForAddUrl1+item.OwnerId+v.ForefootUrl}">
+                                    <div class="slds-truncate" title="{!item.OwnerName__c}">
+                                        <a href="{!v.baseUrl+item.OwnerId}">
                                         {!item.OwnerName__c}
                                         </a>
                                     </div>

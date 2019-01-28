@@ -1,22 +1,28 @@
 <aura:component controller="ActionItemsFullViewController" implements="force:hasRecordId,flexipage:availableForRecordHome,force:appHostable,flexipage:availableForAllPageTypes,force:LightningQuickAction" 
                 access="global">
     <!-- attribute-->
+	<aura:attribute name="QBRName" type="String"/>
     <aura:attribute name="QBRid" type="String"/>
-    <aura:attribute name="arrowDirection" type="String" default="arrowup"/>
+    <aura:attribute name="arrowDirectionSub" type="String" default="arrowdown"/>
+    <aura:attribute name="arrowDirectionDate" type="String" default="arrowdown"/>
+    <aura:attribute name="arrowDirectionS" type="String" default="arrowdown"/>
+    <aura:attribute name="arrowDirectionA" type="String" default="arrowdown"/>
+    <aura:attribute name="arrowDirectionP" type="String" default="arrowdown"/>
     <aura:attribute name="items" type="Task[]" />
     <aura:attribute name="itemsSize" type="Integer" />
-    <aura:attribute name="ForeheadUrl" type="String" default="https://tmcinpact2--dev12.lightning.force.com/lightning/r/"/>
-    <aura:attribute name="ForAddUrl1" type="String" default="User/"/>
-    <aura:attribute name="ForAddUrl2" type="String" default="Tasks/"/>
-    <aura:attribute name="ForefootUrl" type="String" default="/view"/>
-
+    <aura:attribute name="baseUrl" type="String"/>
     
+    <aura:attribute name="flagP" type="String" default="true"/>
+    <aura:attribute name="flagAs" type="String" default="true"/>
+    <aura:attribute name="flagS" type="String" default="true"/>
+    <aura:attribute name="flagD" type="String" default="true"/>
+    <aura:attribute name="flagSob" type="String" default="true"/>    
     
     <aura:handler name="init" value="{!record }" action="{!c.init }"/>   
     <!-- handlers-->
     <aura:handler name="Afterrefresh" event="force:refreshView" action="{!c.init}" />
     <aura:handler name="handleEdit" event="force:editRecord" action="{!c.init}" />
-	<aura:handler name="handleSaveSuccess" event="force:recordSaveSuccess" action="{!c.init}" />
+    <aura:handler name="handleSaveSuccess" event="force:recordSaveSuccess" action="{!c.init}" />
     <aura:handler name="init" value="{!this }" action="{!c.init }"/>   
     <aura:handler name="showToast" event="force:showToast" action="{!c.init}" />
     <div class="slds-template__container" data-aura-rendered-by="387:0;p">
@@ -27,17 +33,40 @@
                         <div class="slds-media__body">
                             <div class="slds-page-header__name">
                                 <div class="slds-page-header__name-title">
-                                    <span  class="uiImage" data-aura-class="uiImage" style="font-size:15px;">
-                                        <img  style="width:2rem;height:2rem;background-color: #4BC076;" src="/img/icon/t4v35/standard/task.svg"  alt="Action Items" title="QBR/QTR"/>
-                                        &nbsp;&nbsp;QBR/QTR Action Items({!v.itemsSize})
-                                    </span>
+                                    <!--<span  class="uiImage" data-aura-class="uiImage" style="font-size:15px;">
+                                       <img  style="width:2rem;height:2rem;background-color: #4BC076;" src="/img/icon/t4v35/standard/task.svg"  alt="Action Items" title="QBR/QTR"/>
+                                        &nbsp;&nbsp;
+          QBR/QTR Action Items({!v.itemsSize})
+                                    </span>!-->
+                                    <nav role="navigation" aria-label="Breadcrumbs" data-aura-rendered-by="532:0">
+                                        <ol class="slds-breadcrumb slds-list--horizontal" data-aura-rendered-by="533:0">
+                                            <li class="slds-breadcrumb__item slds-line-height--reset" data-aura-rendered-by="535:0">
+                                                <a title="QBR/QTR"  href="{!v.baseUrl+'lightning/o/QBR_QTR__c/list'}" class="forceBreadCrumbItem" data-aura-class="forceBreadCrumbItem">
+                                                    <span  class="uiOutputText" data-aura-class="uiOutputText">
+                                                        QBR/QTR
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li class="slds-breadcrumb__item slds-line-height--reset" data-aura-rendered-by="537:0">
+                                                <a title="{!v.QBRName}"  href="{!v.baseUrl+v.QBRid}" class="forceBreadCrumbItem" data-aura-class="forceBreadCrumbItem">
+                                                    <span  class="uiOutputText" data-aura-class="uiOutputText">
+                                                        {!v.QBRName}
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ol>
+                                    </nav>
+                                    <div style="margin-top:2px;"/>
+                                    <h1 class="slds-page-header__title slds-truncate" style="font-weight: bold;font-size: 1.125rem;" title="QBR/QTR Action Items" >
+                                        QBR/QTR Action Items({!v.itemsSize})
+                                    </h1>
                                 </div>
                             </div>
                         </div>
-                         <div class="slds-col slds-no-flex slds-align-bottom" style="height:45px;">
-      						<div class="slds-button-group" role="group" style="height:2rem;">
-                                	<lightning:button class="slds-button slds-button--neutral" iconName="utility:refresh" onclick="{!c.init }"></lightning:button>
-                        	</div>
+                        <div class="slds-col slds-no-flex slds-align-bottom" style="height:45px;">
+                            <div class="slds-button-group" role="group" style="height:2rem;">
+                                <lightning:button class="slds-button slds-button--neutral" iconName="utility:refresh" onclick="{!c.init }"></lightning:button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -47,38 +76,38 @@
     <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal" style="overflow-x:hidden;table-layout:fixed;">
         <thead>
             <tr class="slds-line-height_reset" >
-                <th class="slds-text-title_caps" scope="col" width="3%">
+                <th class="slds-text-title_caps" scope="col" width="4%">
                     <div class="slds-truncate" title="Stage"></div>
                 </th>
                 <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortSubject}" width="15%">
                     <a onmouseover="{!c.MouseOverFunSob}" onmouseout="{!c.MouseLeaveSob}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Subject" >Subject</span>
+                        <span class="slds-truncate" >Subject</span>
                         <div aura:id="divHelpSob" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
+                            <aura:if isTrue="{! v.arrowDirectionSub == 'arrowdown' }">
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
+                                    <lightning:icon aura:id="sob1" iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow down"/>  
                                 </div> 
                             </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
+                            <aura:if isTrue="{! v.arrowDirectionSub != 'arrowdown' }"> 
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
+                                    <lightning:icon aura:id="sob1" iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow up"/>  
                                 </div>
                             </aura:if>   
                         </div>
                     </a>
                 </th>
                 <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortActivitydate}" width="10%">
-                    <a onmouseover="{!c.MouseOverFunDate}" onmouseout="{!c.MouseLeaveDate}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Date" >Due Date</span>
+                    <a onmouseover="{!c.MouseOverFunDate}" onmouseout="{!c.MouseLeaveDate}"  class="slds-th__action slds-text-link--reset">
+                        <span class="slds-truncate" >Due Date</span>
                         <div aura:id="divHelpDate" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
+                            <aura:if isTrue="{! v.arrowDirectionDate == 'arrowdown' }">
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
+                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow down"/>  
                                 </div> 
                             </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
+                            <aura:if isTrue="{! v.arrowDirectionDate != 'arrowdown' }"> 
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
+                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow up"/>  
                                 </div>
                             </aura:if>   
                         </div>
@@ -86,33 +115,33 @@
                 </th>
                 <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortStatus}" width="10%">
                     <a onmouseover="{!c.MouseOverFunStatus}" onmouseout="{!c.MouseLeaveStatus}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Status" >Status</span>
+                        <span class="slds-truncate" >Status</span>
                         <div aura:id="divHelpStatus" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
+                            <aura:if isTrue="{! v.arrowDirectionS == 'arrowdown' }">
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
+                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow down"/>  
                                 </div> 
                             </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
+                            <aura:if isTrue="{! v.arrowDirectionS != 'arrowdown' }"> 
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
+                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow up"/>  
                                 </div>
                             </aura:if>   
                         </div>
                     </a>
                 </th>
                 <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortAssigned}" width="15%">
-                    <a onmouseover="{!c.MouseOverFunAssigned}" onmouseout="{!c.MouseLeaveAssigned}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Assigned" >Assigned To</span>
+                    <a onmouseover="{!c.MouseOverFunAssigned}" onmouseout="{!c.MouseLeaveAssigned}"  class="slds-th__action slds-text-link--reset">
+                        <span class="slds-truncate" >Assigned To</span>
                         <div aura:id="divHelpAssigned" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
+                            <aura:if isTrue="{! v.arrowDirectionA == 'arrowdown' }">
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
+                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow down"/>  
                                 </div> 
                             </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
+                            <aura:if isTrue="{! v.arrowDirectionA != 'arrowdown' }"> 
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
+                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow up"/>  
                                 </div>
                             </aura:if>  
                         </div>
@@ -120,60 +149,46 @@
                 </th>
                 <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortPriority}" width="10%">
                     <a onmouseover="{!c.MouseOverFunPriority}" onmouseout="{!c.MouseLeavePriority}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Priority" >Priority</span>
+                        <span class="slds-truncate" >Priority</span>
                         <div aura:id="divHelpPriority" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
+                            <aura:if isTrue="{! v.arrowDirectionP == 'arrowdown' }">
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
+                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow down"/>  
                                 </div> 
                             </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
+                            <aura:if isTrue="{! v.arrowDirectionP != 'arrowdown' }"> 
                                 <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
+                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow up"/>  
                                 </div>
                             </aura:if>      
                         </div>
                     </a>
                 </th>
-                <th class="slds-is-sortable  slds-text-title_caps" scope="col" onclick="{!c.sortComments}">
-                    <a onmouseover="{!c.MouseOverFunComments}" onmouseout="{!c.MouseLeaveComments}" class="slds-th__action slds-text-link--reset">
-                        <span class="slds-truncate" title="Comments" >Comments</span>
-                        <div aura:id="divHelpComments" class="slds-hide">
-                            <aura:if isTrue="{! v.arrowDirection == 'arrowdown' }">
-                                <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowdown" size="xx-small" alternativeText="sort arrow down"/>  
-                                </div> 
-                            </aura:if>  
-                            <aura:if isTrue="{! v.arrowDirection != 'arrowdown' }"> 
-                                <div class="slds-icon_container">  
-                                    <lightning:icon iconName="utility:arrowup" size="xx-small" alternativeText="sort arrow up"/>  
-                                </div>
-                            </aura:if>           
-                        </div>
-                    </a>
+                <th class="slds-is-sortable  slds-text-title_caps" scope="col" >
+                    <span class="slds-truncate">Comments</span>
                 </th>
                 <th class="slds-text-title_caps" scope="col" width="3%">
-                    <div class="slds-truncate" title="Stage"></div>
+                    <div class="slds-truncate" ></div>
                 </th>
             </tr>
         </thead>
         <tbody>
             <aura:iteration items="{!v.items}" var="item" indexVar="index">
                 <tr class="slds-hint-parent" style="backgroud-color:white">
-                    <td data-label="">
-                        <div class="slds-truncate" title="{!index+1}" >{!index+1}</div>    
+                    <td data-label="" style="text-align:right;">
+                        <div class="slds-truncate">{!index+1}</div>    
                     </td>
                     <th data-label="Subject" scope="row">
                         <aura:if isTrue="{!or(item.Status == 'Completed',item.Status == 'Suspended')}">
                             <div class="slds-truncate" title="{!item.Subject}" style="text-decoration: line-through;">
-                                <a href="{!v.ForeheadUrl+v.ForAddUrl2+item.Id+v.ForefootUrl}">
+                                <a href="{!v.baseUrl+item.Id}">
                                     {!item.Subject}
                                 </a>
                             </div>
                             
                             <aura:set attribute="else">
                                 <div class="slds-truncate" title="{!item.Subject}" >
-                                    <a href="{!v.ForeheadUrl+v.ForAddUrl2+item.Id+v.ForefootUrl}">
+                                    <a href="{!v.baseUrl+item.Id}">
                                         {!item.Subject}
                                     </a>
                                 </div>
@@ -190,7 +205,7 @@
                     </td>
                     <td data-label="Assigned To">
                         <div class="slds-truncate" title="{!item.OwnerName__c}">
-                            <a href="{!v.ForeheadUrl+v.ForAddUrl1+item.OwnerId+v.ForefootUrl}">
+                            <a href="{!v.baseUrl+item.OwnerId}">
                                 {!item.OwnerName__c}
                             </a>
                         </div>
@@ -200,7 +215,7 @@
                     </td>
                     <td data-label="Comments">
                         <div class="slds-truncate" title="{!item.Description}">
-                                {!item.Description}
+                            {!item.Description}
                         </div>
                     </td>
                     <td >

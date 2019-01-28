@@ -22,6 +22,11 @@ public class CopyProjectsWithProductsController {
             opp.StageName = 'Draft';
             //コピー元商品
             opp.Original_Project__c = projectId;
+            //ProjectOwner
+            opp.OwnerId = UserInfo.getUserId();
+            //確度
+            opp.probability = null;
+
             //商談オブジェクトの項目取得
 			Map<string,Sobjectfield> fieldMap = Opportunity.sObjectType.getDescribe().fields.getmap();      
             for (String fieldName : fieldMap.keySet()) {

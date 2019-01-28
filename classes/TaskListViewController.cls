@@ -1,7 +1,5 @@
 public class TaskListViewController {
     @AuraEnabled
-    public static List<Task> items{get;set;}
-    @AuraEnabled
     public static String flag{get;set;}
     @AuraEnabled
     public static Integer taskSize{get;set;}

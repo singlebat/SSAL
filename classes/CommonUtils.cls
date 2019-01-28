@@ -9,7 +9,7 @@ public class CommonUtils {
      * @param excludeFields   不要の項目
      * @return                SQL文
      */
-    public static String getCustomFieldNames(Schema.SObjectType objType,  Set<String> excludeFields) {
+    public static String getCustomFieldNames(Schema.SObjectType objType, Set<String> excludeFields) {
         String s = '';
         String delimiter = '';
         Map<string,Sobjectfield> fieldMap = objType.getDescribe().fields.getmap();
@@ -54,22 +54,18 @@ public class CommonUtils {
         Map<String, Integer> lengthMap = new Map<String, Integer>();
         for (String fieldName: fieldMap.keySet()) 
         {
-            //fieldMap.get(fieldName).getDescribe().getLabel();//It provides to get the object fields label.
-            if(fieldMap.get(fieldName).getDescribe().getType() == Schema.DisplayType.STRING)
+            if(fieldMap.get(fieldName).getDescribe().getType() == Schema.DisplayType.INTEGER)
             {
                 lengthMap.put(fieldName, fieldMap.get(fieldName).getDescribe().getLength());
             }
        }
-        system.debug('---lengthMap:' + lengthMap);
-        //return fieldMap.get(fieldName).getDescribe().getLabel();    
+        system.debug('---lengthMap:' + lengthMap); 
         return lengthMap;    
     }
-    
-     //public static List<TheValueSet> PreValues;
+
     public static List<TheValueSet> getPickListValuesIntoList(String objectName, String fieldName){
        List<String> pickListValuesList= new List<String>();
         List<TheValueSet> PreValues = new List<TheValueSet>();
-		Schema.DescribeFieldResult fieldResult = MSGA_M_One_Product__c.Test_FF__c.getDescribe();
         Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
         Schema.SObjectType theSchema = schemaMap.get(objectName);
         Map<String, Schema.SObjectField> fieldMap = theSchema.getDescribe().fields.getMap();
@@ -98,71 +94,83 @@ public class CommonUtils {
     }
     
     @future(callout=true)
-    public static void updatePicklist(String objectName, String fieldName, List<String> options)
+    public static void updatePicklist(String objectName, List<String> fieldNames, List<String> ssdOptions, List<String> encryptionOptions, List<String> formOptions)
     {
-        List<TheValueSet> preOptions = getPickListValuesIntoList(objectName, fieldName);
-        // サンプルリスト値作成
-        List<MetadataService.CustomValue> values = new List<MetadataService.CustomValue>();
-        Set<String> preValues = new Set<String>();
-        for(TheValueSet option : preOptions)
+        List<MetadataService.CustomField> customFields = new List<MetadataService.CustomField>();
+        for(String fieldName : fieldNames)
         {
-            MetadataService.CustomValue customValue = new MetadataService.CustomValue();
-            customValue.fullName = option.value;
-            customValue.default_x = option.isdefault;
-            customValue.description = '';
-            customValue.isActive = option.isactive;
-            customValue.label = option.label;
-            preValues.add(option.value);
-            values.add(customValue);
-        }
-        for(String option : options)
-        {
-            if(!preValues.contains(option))
+            List<TheValueSet> preOptions = getPickListValuesIntoList(objectName, fieldName);
+            // サンプルリスト値作成
+            List<MetadataService.CustomValue> values = new List<MetadataService.CustomValue>();
+            Set<String> preValues = new Set<String>();
+            for(TheValueSet option : preOptions)
             {
                 MetadataService.CustomValue customValue = new MetadataService.CustomValue();
-                customValue.fullName = option;
-                customValue.default_x = false;
+                customValue.fullName = option.value;
+                customValue.default_x = option.isdefault;
                 customValue.description = '';
-                customValue.isActive = true;
-                customValue.label = option;
+                customValue.isActive = option.isactive;
+                customValue.label = option.label;
+                preValues.add(option.value);
                 values.add(customValue);
             }
+            List<String> options = new List<String>();
+            if(fieldName == 'SSD_I_F__c')
+            {
+                options = ssdOptions;
+            }
+            if(fieldName == 'SSD_Encryption__c')
+            {
+                options = encryptionOptions;
+            }
+            if(fieldName == 'SSD_Form_Factor__c')
+            {
+                options = formOptions;
+            }
+            for(String option : options)
+            {
+                if(!preValues.contains(option))
+                {
+                    MetadataService.CustomValue customValue = new MetadataService.CustomValue();
+                    customValue.fullName = option;
+                    customValue.default_x = false;
+                    customValue.description = '';
+                    customValue.isActive = true;
+                    customValue.label = option;
+                    values.add(customValue);
+                }
+            }
+            system.debug('---values:' + values);
+            // ValueSet作成
+            MetadataService.ValueSet picklistValueSet = new MetadataService.ValueSet();
+            MetadataService.ValueSetValuesDefinition valueDefinition = new MetadataService.ValueSetValuesDefinition();
+            valueDefinition.value = values;
+            valueDefinition.sorted = true;
+            picklistValueSet.valueSetDefinition = valueDefinition;
+            
+            // Picklist項目設定
+            MetadataService.CustomField customField = new MetadataService.CustomField();
+            customField = new MetadataService.CustomField();
+            customField.fullName = objectName + '.' + fieldName;
+            customField.label = CommonUtils.getLabel(objectName, fieldName);
+            customField.type_x = 'Picklist';
+            customField.valueSet = picklistValueSet;
+            customFields.add(customField);
         }
-        system.debug('---values:' + values);
-        // ValueSet作成
-        MetadataService.ValueSet picklistValueSet = new MetadataService.ValueSet();
-        MetadataService.ValueSetValuesDefinition valueDefinition = new MetadataService.ValueSetValuesDefinition();
-        valueDefinition.value = values;
-        valueDefinition.sorted = true;
-        picklistValueSet.valueSetDefinition = valueDefinition;
-        
-        // Picklist項目設定
-        MetadataService.CustomField customField = new MetadataService.CustomField();
-        /*MetadataService.CustomField customField =
-            (MetadataService.CustomField) service.readMetadata('CustomField',
-                new String[] { 'Lead.picklist__c' }).getRecords()[0];*/
-        customField = new MetadataService.CustomField();
-        customField.fullName = objectName + '.' + fieldName;
-        customField.label = CommonUtils.getLabel(objectName, fieldName);
-        customField.type_x = 'Picklist';
-        customField.valueSet = picklistValueSet;
-        //customField.valueSet.add(picklistValueSet);
-        
-        // メタデータ更新処理
         MetadataService.MetadataPort metadataService = new MetadataService.MetadataPort();
         metadataService.SessionHeader = new MetadataService.SessionHeader_element();
         metadataService.SessionHeader.sessionId = UserInfo.getSessionId();
-        system.debug('---result:' + metadataService.updateMetadata(new MetadataService.CustomField[]{customField}));
+        system.debug('---result:' + metadataService.updateMetadata(customFields));
     }
     
-    public static String generateRandomString(Integer len) {
-    final String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-    String randStr = '';
-    while (randStr.length() < len) {
-       Integer idx = Math.mod(Math.abs(Crypto.getRandomInteger()), chars.length());
-       randStr += chars.substring(idx, idx+1);
-    }
-    return randStr; 
- }
- 
+    public static String generateRandomString(Integer len) 
+    {
+            final String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+            String randStr = '';
+            while (randStr.length() < len) {
+               Integer idx = Math.mod(Math.abs(Crypto.getRandomInteger()), chars.length());
+               randStr += chars.substring(idx, idx+1);
+        }
+        return randStr; 
+ 	}
 }
